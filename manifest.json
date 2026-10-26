@@ -1,0 +1,16 @@
+{
+  "name": "R book - Secure Vault",
+  "short_name": "R book",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d3536",
+  "theme_color": "#0d3536",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
