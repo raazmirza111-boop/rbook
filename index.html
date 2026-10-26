@@ -373,9 +373,9 @@
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Your Exact Firebase Configuration
+    // Your Exact Firebase Configuration with Newly Created Active Key
     const firebaseConfig = {
-      apiKey: "AIzaSyAmGn4U1js7nnt-RKv7Pj_i0jxdpcJe-AI",
+      apiKey: "AIzaSyCZQpKjWGukpVE9cBI5caoqtGPvcRSNqzU",
       authDomain: "rbook-e1732.firebaseapp.com",
       projectId: "rbook-e1732",
       storageBucket: "rbook-e1732.firebasestorage.app",
@@ -457,7 +457,7 @@
 
     window.logout = () => signOut(auth);
 
-    // Realtime Firestore Listener (Index Error Resolved)
+    // Realtime Firestore Listener (No Index Required)
     function listenToPhotos(uid) {
       const q = query(
         collection(db, "rbook_photos"),
