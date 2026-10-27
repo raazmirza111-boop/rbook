@@ -6,6 +6,11 @@
   <title>R book - Secure Vault</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0d3536">
+  
+  <!-- App Icons for Mobile & Laptop Desktop -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23e63946'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='320' font-weight='900' fill='white'%3ER%3C/text%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='110' fill='%23e63946'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='320' font-weight='900' fill='white'%3ER%3C/text%3E%3C/svg%3E">
+
   <style>
     * {
       box-sizing: border-box;
@@ -118,6 +123,17 @@
       border: 1px solid #1c5254;
       color: #fff;
       font-size: 14px;
+    }
+    .forgot-link-box {
+      text-align: right;
+      margin-top: -8px;
+      margin-bottom: 18px;
+    }
+    .forgot-link {
+      font-size: 12px;
+      color: #2ec4b6;
+      cursor: pointer;
+      text-decoration: underline;
     }
     .primary-btn {
       width: 100%;
@@ -370,10 +386,10 @@
   <!-- Firebase Modular SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // Firebase Official Configuration (Updated with correct key)
+    // Firebase Official Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyAmGn4U1js7nnt-RKv7Pj_iOjxdpcJe-AI",
       authDomain: "rbook-e1732.firebaseapp.com",
@@ -453,6 +469,21 @@
       document.getElementById('tabSignIn').classList.toggle('active', !isSignUp);
       document.getElementById('tabSignUp').classList.toggle('active', isSignUp);
       document.getElementById('authSubmitBtn').textContent = isSignUp ? "Create Vault Account" : "Open Vault";
+      document.getElementById('forgotBox').style.display = isSignUp ? "none" : "block";
+    };
+
+    window.forgotPassword = async () => {
+      const email = document.getElementById('authEmail').value.trim();
+      if (!email) {
+        alert("Please enter your email address first, then click 'Forgot Password?'.");
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert("Password reset link has been sent to your Gmail! Please check your Inbox and Spam folder.");
+      } catch (err) {
+        alert("Error: " + err.message);
+      }
     };
 
     window.logout = () => signOut(auth);
@@ -470,7 +501,6 @@
           photosList.push({ id: doc.id, ...doc.data() });
         });
         
-        // Memory-level sort by newest created
         photosList.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
         updateCategoryCounts();
@@ -480,7 +510,6 @@
       });
     }
 
-    // Photo Rendering
     function updateCategoryCounts() {
       const counts = { personal: 0, family: 0, old: 0, new: 0 };
       photosList.forEach(p => {
@@ -558,7 +587,6 @@
 
     window.handleSearch = () => renderPhotos();
 
-    // Photo Operations
     window.openAddModal = () => {
       document.getElementById('addModal').classList.add('active');
     };
@@ -625,7 +653,6 @@
           createdAt: Date.now()
         });
 
-        // Reset inputs and close
         document.getElementById('photoNote').value = '';
         document.getElementById('deviceFileInput').value = '';
         document.getElementById('webImageUrl').value = '';
@@ -638,7 +665,6 @@
       }
     };
 
-    // Client-Side Image Compression for Firestore Direct Storage
     function compressImageToBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -724,13 +750,18 @@
         <label>Master Vault Password</label>
         <input type="password" id="authPass" placeholder="••••••••">
       </div>
+      
+      <!-- Forgot Password Button -->
+      <div class="forgot-link-box" id="forgotBox">
+        <span class="forgot-link" onclick="forgotPassword()">Forgot Password?</span>
+      </div>
+
       <button class="primary-btn" id="authSubmitBtn" onclick="handleAuthAction()">Open Vault</button>
     </div>
   </div>
 
   <!-- Main Application Screen -->
   <main id="appInterface" style="display: none;">
-    <!-- 4 Main Dynamic Category Cards -->
     <div class="categories">
       <div class="cat-card" data-cat="personal" onclick="filterCategory('personal')">
         <div class="cat-icon">🔒</div>
@@ -761,7 +792,6 @@
       <button class="add-btn" onclick="openAddModal()">+ Add Photo</button>
     </div>
 
-    <!-- Gallery Grid -->
     <div class="gallery" id="galleryGrid"></div>
   </main>
 
